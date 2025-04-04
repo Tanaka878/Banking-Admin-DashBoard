@@ -103,7 +103,7 @@ const Dashboard: React.FC = () => {
             </button>
             <button 
               className="w-full flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white"
-              onClick={() => router.push('/login')}
+              onClick={() => router.push('/components/Login')}
             >
               <LogOut className="h-5 w-5 mr-3" />
               <span>Logout</span>
