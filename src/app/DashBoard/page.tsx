@@ -1,6 +1,6 @@
 'use client'
 import { useRouter } from 'next/navigation'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { PieChart, DatabaseIcon, Users, CreditCard, AlertCircle, Settings, LogOut, FileText, Bell } from 'lucide-react'
 
 interface Notification {
@@ -10,21 +10,69 @@ interface Notification {
   priority: 'high' | 'medium' | 'low';
 }
 
+type LoanType = 'PERSONAL' | 'BUSINESS' | 'MORTGAGE' | 'AUTO'; // Add more as needed
+type LoanStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'PAID'; // Add more as needed
+
+interface Loan {
+  loanId: number;
+  loanDate: string; // ISO date string
+  loanAmount: number;
+  loanType: LoanType;
+  loanStatus: LoanStatus;
+  paybackPeriod: number;
+  interestRate: number;
+  monthlyInstallment: number;
+  monthsLeft: number;
+  email: string;
+}
+
+interface Statistics {
+  loans: Loan[];
+  pending: number;
+  users: number;
+}
+
+
 const Dashboard: React.FC = () => {
   const router = useRouter()
   const [activeLoans] = useState<number>(124)
   const [pendingApprovals] = useState<number>(18)
-  const [totalUsers] = useState<number>(1562)
   const [fraudAlerts] = useState<number>(3)
+  const [stats, setStats] = useState<Statistics | null>(null);
+  const [totalUsers] = useState<number>(300)
+
   const [notifications] = useState<Notification[]>([
     { id: 1, message: "New loan application #4582 requires review", time: "10 min ago", priority: "high" },
-    { id: 2, message: "User verification pending for 7 accounts", time: "25 min ago", priority: "medium" },
+    { id: 2, message: "User verification pending for 7 accounts", time: "5 days ago", priority: "medium" },
     { id: 3, message: "System maintenance scheduled for 02:00 AM", time: "1 hour ago", priority: "low" }
   ])
 
   const navigateTo = (path: string): void => {
     router.push(path)
   }
+
+
+  useEffect(() => {
+    const fetchStatistics = async () => {
+      try {
+        const res = await fetch('https://distinguished-happiness-production.up.railway.app/admin/getStats');
+        if (!res.ok) {
+          throw new Error('Failed to fetch statistics');
+        }
+        const data: Statistics = await res.json();
+        setStats(data);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+  
+    fetchStatistics(); 
+  }, []);
+  
+  
+  
+    
+
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
@@ -44,9 +92,9 @@ const Dashboard: React.FC = () => {
             </button>
             <div className="flex items-center">
               <div className="bg-blue-600 rounded-full h-8 w-8 flex items-center justify-center text-white font-medium">
-                JD
+                AD
               </div>
-              <span className="ml-2 text-gray-700 font-medium">John Doe</span>
+              <span className="ml-2 text-gray-700 font-medium">ADMIN</span>
             </div>
           </div>
         </div>
@@ -139,7 +187,7 @@ const Dashboard: React.FC = () => {
               <div className="flex justify-between items-center">
                 <div>
                   <p className="text-gray-500 text-sm">Pending Approvals</p>
-                  <h3 className="text-2xl font-bold text-gray-800">{pendingApprovals}</h3>
+                  <h3 className="text-2xl font-bold text-gray-800">{stats?.pending}</h3>
                 </div>
                 <div className="bg-yellow-100 p-3 rounded-full">
                   <FileText className="h-6 w-6 text-yellow-600" />
@@ -154,14 +202,14 @@ const Dashboard: React.FC = () => {
               <div className="flex justify-between items-center">
                 <div>
                   <p className="text-gray-500 text-sm">Total Users</p>
-                  <h3 className="text-2xl font-bold text-gray-800">{totalUsers}</h3>
+                  <h3 className="text-2xl font-bold text-gray-800">{stats?.users}</h3>
                 </div>
                 <div className="bg-green-100 p-3 rounded-full">
                   <Users className="h-6 w-6 text-green-600" />
                 </div>
               </div>
               <div className="mt-4 text-sm text-green-600">
-                +12 new today
+                
               </div>
             </div>
 
