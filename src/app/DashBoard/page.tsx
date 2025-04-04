@@ -36,10 +36,8 @@ interface Statistics {
 const Dashboard: React.FC = () => {
   const router = useRouter()
   const [activeLoans] = useState<number>(124)
-  const [pendingApprovals] = useState<number>(18)
   const [fraudAlerts] = useState<number>(3)
   const [stats, setStats] = useState<Statistics | null>(null);
-  const [totalUsers] = useState<number>(300)
 
   const [notifications] = useState<Notification[]>([
     { id: 1, message: "New loan application #4582 requires review", time: "10 min ago", priority: "high" },
